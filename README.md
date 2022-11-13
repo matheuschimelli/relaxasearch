@@ -1,29 +1,18 @@
-# Chill Search
+# RelaxaSearch
 
-Foobar is a Python library for dealing with word pluralization.
+RelaxaSearch aims to be a full text search engine and lightweight replacemenet for ElasticSearch, built on top of Bleve using Go.
+
+RelaxaSearch derives from portuguese word "Relaxa", which basically means be calm. Only those who already tried to setup ElasticSearch, or OpenSearch knows how stressfull setting them up it can be sometimes.
+
+On other hands, Relax Search tries to be simplest and easiest solution for a full text search engine.
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
 
-```bash
-pip install foobar
-```
 
 ## Usage
 
-```python
-import foobar
 
-# returns 'words'
-foobar.pluralize('word')
-
-# returns 'geese'
-foobar.pluralize('goose')
-
-# returns 'phenomenon'
-foobar.singularize('phenomena')
-```
 
 ## Contributing
 
@@ -34,4 +23,4 @@ Please make sure to update tests as appropriate.
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)

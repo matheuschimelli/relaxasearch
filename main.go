@@ -1,21 +1,30 @@
 package main
 
 import (
-	"fmt"
-	controller "mathe/golang/v2/controllers"
-	"mathe/golang/v2/urls"
-	"net/http"
+	"github.com/gin-gonic/gin"
+	controller "github.com/matheuschimelli/relaxasearch/controllers"
+	core "github.com/matheuschimelli/relaxasearch/core"
 )
 
+//var dataDir = flag.String("dataDir", "data", "data directory")
+
 func main() {
-	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	router := gin.Default()
 
-	http.HandleFunc(urls.UrlsV1.Index, controller.HandleIndex)
+	coreService := core.NewIndexService()
+	coreService.InitIndex("relaxasearchData")
 
-	http.HandleFunc("/search", controller.GetSearch)
-	http.HandleFunc("/", controller.GetIndex)
+	// Handles index
+	router.GET("/relaxasearch/v1", controller.GETAllIndexes)
+	router.GET("/relaxasearch/v1/:indexName", controller.GETShowIndex)
+	router.POST("/relaxasearch/v1/:indexName", controller.POSTCreateIndex)
+	router.DELETE("/relaxasearch/v1/:indexName", controller.DELETEIndex)
 
-	fmt.Println("Server up and runnning at http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	// Handles Index data
+	router.GET("/relaxasearch/v1/:indexName/count", controller.GETDocCount)
+	router.GET("/relaxasearch/v1/:indexName/doc/:docId", controller.GETDocCount)
+	router.POST("/relaxasearch/v1/:indexName/:docId", controller.POSTUpserDoc)
+	router.DELETE("/relaxasearch/v1/:indexName/doc/:docId", controller.DELETEDoc)
+
+	router.Run(":3000")
 }

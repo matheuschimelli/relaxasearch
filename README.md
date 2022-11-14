@@ -11,7 +11,7 @@ On other hands, Relax Search tries to be simplest and easiest solution for a ful
 
 
 ## Usage
-
+You can just run the binary on any directory you want. Please note that relaxasearch will look up for a directory called `relaxasearchData`. This diretory **should be on the same directory that you are running relaxasearch**. It will be responsable for storing the index data. If you hadn't set it up, relaxasearch will throw an error on terminal. 
 
 
 ## Contributing

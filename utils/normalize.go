@@ -3,6 +3,7 @@ package utils
 import (
 	"log"
 	"regexp"
+	"strings"
 	"unicode"
 
 	"golang.org/x/text/transform"
@@ -24,6 +25,7 @@ func Normalize(str string) string {
 	}
 
 	finalResult := re.ReplaceAllString(result, " ")
+	finalResult = strings.ToLower(finalResult)
 
 	return finalResult
 }

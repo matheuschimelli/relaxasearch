@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/blevesearch/bleve/v2"
+	"github.com/blevesearch/bleve/v2/search/query"
 	indexApi "github.com/blevesearch/bleve_index_api"
 	"github.com/matheuschimelli/relaxasearch/utils"
 )
@@ -47,7 +49,7 @@ func DocCount(indexName string) (DocCountResult, error) {
 }
 
 func UpsertDoc(indexName string, docId string, docData []byte) (OperationResult, error) {
-	if indexName == "" {
+	if indexName == "" || docId == "count" {
 		message := "error 14: indexName cannot be blank on upsertDoc"
 		return OperationResult{Success: false, Message: message}, errors.New(message)
 	}
@@ -166,5 +168,114 @@ func ShowDoc(indexName string, docId string) (OperationResult, error) {
 	return OperationResult{
 		Success: true,
 		Data:    rv,
+	}, nil
+}
+
+/*
+Search query sample for testing purpouses
+
+	{
+		"size": 10,
+		"from": 0,
+		"explain": false,
+		"highlight": {},
+		"query": {
+			"boost": 1,
+			"query": "teste"
+		},
+		"fields": [
+			"*"
+		]
+	}
+*/
+func Search(indexName string, jsonSearchQuery []byte) (*OperationResult, error) {
+	if indexName == "" {
+		message := "error 14: indexName cannot be blank on upsertDoc"
+		return &OperationResult{Success: false, Message: message}, errors.New(message)
+	}
+
+	indexName = utils.Normalize(indexName)
+
+	index := IndexByName(indexName)
+
+	if index == nil {
+		message := fmt.Sprintf("error 15: cannot find index %s on indexName param on UpsertDoc on document_core.", indexName)
+		return &OperationResult{Success: false, Message: message}, errors.New(message)
+	}
+
+	fmt.Printf("request body: %s", jsonSearchQuery)
+
+	// parse the request
+	var searchRequest bleve.SearchRequest
+	err := json.Unmarshal(jsonSearchQuery, &searchRequest)
+
+	if err != nil {
+		message := fmt.Sprintf("error 15: cannot unmarshal json search query. error: %s", err)
+		return &OperationResult{Success: false, Message: message}, errors.New(message)
+	}
+
+	fmt.Printf("parsed request %#v", searchRequest)
+
+	// validate the query
+	if srqv, ok := searchRequest.Query.(query.ValidatableQuery); ok {
+		err = srqv.Validate()
+		if err != nil {
+			message := fmt.Sprintf("error 15: cannot validate query. eror: %s", err)
+			return &OperationResult{Success: false, Message: message}, errors.New(message)
+		}
+	}
+
+	searchResponse, err := index.Search(&searchRequest)
+
+	if err != nil {
+		message := fmt.Sprintf("error 15: cannot execute search query. error: %s", err)
+		return &OperationResult{Success: false, Message: message}, errors.New(message)
+	}
+
+	return &OperationResult{
+		Success: false,
+		Message: "message",
+		Data:    searchResponse,
+	}, nil
+
+}
+
+func DeleteDoc(indexName string, docId string) (*OperationResult, error) {
+
+	if indexName == "" || docId == "count" {
+		message := "error 14: indexName cannot be blank on upsertDoc"
+		return &OperationResult{Success: false, Message: message}, errors.New(message)
+	}
+
+	indexName = utils.Normalize(indexName)
+
+	index := IndexByName(indexName)
+
+	if index == nil {
+		message := fmt.Sprintf("error 15: cannot find index %s on indexName param on UpsertDoc on document_core.", indexName)
+		return &OperationResult{Success: false, Message: message}, errors.New(message)
+	}
+
+	if docId == "" {
+		message := "error 16: document id cannot be blank"
+		return &OperationResult{Success: false, Message: message}, errors.New(message)
+	}
+
+	tempDoc, err := ShowDoc(indexName, docId)
+	if err != nil {
+		message := "error 16: document id cannot be blank"
+		return &OperationResult{Success: false, Message: message}, errors.New(message)
+	}
+
+	deleteErr := index.Delete(docId)
+	if deleteErr != nil {
+		message := fmt.Sprintf("error: %s", deleteErr)
+		return &OperationResult{Success: false, Message: message}, errors.New(message)
+	}
+
+	return &OperationResult{
+		Success: true,
+		Message: "message",
+		Data:    tempDoc,
 	}, nil
 }

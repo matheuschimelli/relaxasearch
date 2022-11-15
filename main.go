@@ -21,10 +21,11 @@ func main() {
 	router.DELETE("/relaxasearch/v1/:indexName", controller.DELETEIndex)
 
 	// Handles Index data
+	router.GET("/relaxasearch/v1/:indexName/:docId", controller.GETShowDoc)
+	router.POST("/relaxasearch/v1/:indexName/search", controller.POSTSearch)
 	router.GET("/relaxasearch/v1/:indexName/count", controller.GETDocCount)
-	router.GET("/relaxasearch/v1/:indexName/doc/:docId", controller.GETDocCount)
 	router.POST("/relaxasearch/v1/:indexName/:docId", controller.POSTUpserDoc)
-	router.DELETE("/relaxasearch/v1/:indexName/doc/:docId", controller.DELETEDoc)
+	router.DELETE("/relaxasearch/v1/:indexName/:docId", controller.DELETEDoc)
 
 	router.Run(":3000")
 }

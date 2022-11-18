@@ -38,6 +38,7 @@ func GETShowDoc(c *gin.Context) {
 
 func POSTUpserDoc(c *gin.Context) {
 	indexName := c.Param("indexName")
+	docId := c.Param("docId")
 
 	jsonSearchQuery, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
@@ -45,7 +46,7 @@ func POSTUpserDoc(c *gin.Context) {
 		return
 	}
 
-	index, err := core.Search(indexName, jsonSearchQuery)
+	index, err := core.UpsertDoc(indexName, docId, jsonSearchQuery)
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"success": false, "message": err})

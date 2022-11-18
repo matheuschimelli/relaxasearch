@@ -12,6 +12,12 @@
 *.so
 *.dylib
 
+# exclude everything
+relaxasearchData/*
+
+# exception to the rule
+!relaxasearchData/.gitkeep 
+
 # Test binary, built with `go test -c`
 *.test
 
